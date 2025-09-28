@@ -1,6 +1,0 @@
-/home/yapomip/c++/experiment/build/CMakeFiles/Experiment.dir
-/home/yapomip/c++/experiment/build/CMakeFiles/build.dir
-/home/yapomip/c++/experiment/build/CMakeFiles/clear.dir
-/home/yapomip/c++/experiment/build/CMakeFiles/build_and_run.dir
-/home/yapomip/c++/experiment/build/CMakeFiles/edit_cache.dir
-/home/yapomip/c++/experiment/build/CMakeFiles/rebuild_cache.dir
