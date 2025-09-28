@@ -1,0 +1,8 @@
+[
+{
+  "directory": "/home/yapomip/c++/experiment/build",
+  "command": "/usr/bin/clang++-18  -I/home/yapomip/c++/experiment/include -g -std=c++20 -o CMakeFiles/Experiment.dir/src/main.cpp.o -c /home/yapomip/c++/experiment/src/main.cpp",
+  "file": "/home/yapomip/c++/experiment/src/main.cpp",
+  "output": "CMakeFiles/Experiment.dir/src/main.cpp.o"
+}
+]

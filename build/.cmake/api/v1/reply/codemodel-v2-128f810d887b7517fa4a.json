@@ -1,0 +1,87 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"jsonFile" : "directory-.-Debug-f5ebdc15457944623624.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.15"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3
+					]
+				}
+			],
+			"name" : "Debug",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "Experiment",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "Experiment::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-Experiment-Debug-55869f561e3154652e3e.json",
+					"name" : "Experiment",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "build::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-build-Debug-bb1d84769f1a0900f85a.json",
+					"name" : "build",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "build_and_run::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-build_and_run-Debug-1a7d8466f663bfd1917d.json",
+					"name" : "build_and_run",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "clear::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-clear-Debug-45f57d22f70000804e77.json",
+					"name" : "clear",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/yapomip/c++/experiment/build",
+		"source" : "/home/yapomip/c++/experiment"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 6
+	}
+}
