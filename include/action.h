@@ -1,68 +1,63 @@
 
 #pragma once
 
-#include <ostream>
-
-#include "action_wraper.h"
-
-/* action set for container */
-template<typename U>
-struct set {
-    using K = U::key_type;
-    using V = U::value_type;
-
-    K index;
-    std::optional<V> old_data;
-    V new_data;
-
-    set(K index, V new_data) : index(index), old_data(std::nullopt), new_data(new_data) {};
-
-    void operator()(U& container) {
-        old_data = container[index];
-        container[index] = new_data;
-    }
-};
-template<typename ActionWrapper, typename ContainerType>
-struct name_method_wrapper<set<ContainerType>, ActionWrapper> {
-    // using Action = set<K, V>;
-    using K = ::set<ContainerType>::K;
-    using V = ::set<ContainerType>::V;
-    void set(K i, V new_data) {
-        return method_wrapper<ActionWrapper, ::set>(this, i, new_data);
-    }
-};
-template<typename U>
-std::ostream& operator<<(std::ostream& out, const set<U>& s) {
-    out << "set: " << s.index << ", " << s.new_data;
-    return out;
+/* Wrapper for method in container wrapper 
+ * for simple methods
+ */
+template<typename Action, typename Container, typename History, typename... Args>
+decltype(auto) method_wrapper_impl(Container& container, History& history, Args&&... args) {
+    Action action = Action(args...);
+    history.add(action);
+    return action(container);
+}
+/* Help for get container from action wrapper */
+template<typename ActionWrapper, typename From>
+decltype(auto) get_container(From* ptr) {
+    return static_cast<ActionWrapper*>(ptr)->get_container();
+}
+/* Help for get history from action wrapper */
+template<typename ActionWrapper, typename From>
+decltype(auto) get_history(From* ptr) {
+    return static_cast<ActionWrapper*>(ptr)->get_history();
+}
+/* Method to call action from action wrapper, use cast to parent */
+template<
+    typename Action, 
+    // parent type
+    typename ActionWrapper, 
+    // pointer this type, can change to just T or void*
+    typename NameMethodWrapperImpl,
+    typename... Args
+>
+decltype(auto) method_wrapper(NameMethodWrapperImpl* nmw, Args&&... args) {
+    return method_wrapper_impl<Action>(
+        get_container<ActionWrapper>(nmw),
+        get_history<ActionWrapper>(nmw),
+        args...
+    );
 }
 
-/* action compare for container */
-template<typename U>
-struct compare {
-    using K = U::key_type;
-    K index1;
-    K index2;
-    
-    compare(K index1, K index2) : index1(index1), index2(index2) {};
-    
-    std::strong_ordering operator()(const U& container) const {
-        return container[index1] <= container[index2] ? 
-            (container[index1] == container[index2] ? 
-                std::strong_ordering::equal : std::strong_ordering::less)
-             : std::strong_ordering::greater;
-    }
-};
-template<typename ActionWrapper, typename ContainerType>
-struct name_method_wrapper<compare<ContainerType>, ActionWrapper> {
-    using K = ContainerType::key_type;
-    std::strong_ordering compare(K i, K j) {
-        return method_wrapper<ActionWrapper, ::compare>(this, i, j);
-    }
-};
-template<typename U>
-std::ostream& operator<<(std::ostream& out, const compare<U>& c) {
-    out << "compare: " << c.index1 << ", " << c.index2;
-    return out;
+/* Help for get action wrapper */
+template<typename ActionWrapper, typename From>
+decltype(auto) get_action_wrapper(From* ptr) {
+    return *static_cast<ActionWrapper*>(ptr);
 }
+
+/* Define action actually type, because it depends only from container type 
+ * this is 
+ */
+template<
+    template<typename... _> typename Action,
+    typename Container
+>
+struct action_type {};
+
+/* Wrapper for method name to be in container wrapper, CRTP use */
+template<
+    template<typename... _> typename Action,
+    typename Container,
+    // parent type
+    typename ActionWrapper
+>
+struct name_method_wrapper {};
 

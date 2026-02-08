@@ -7,20 +7,23 @@
 #include "action_wraper.h"
 #include "action.h"
 
-template<typename ContainerType, template<typename ActionContainerType> typename... Actions>
+#include "set.h"
+#include "compare.h"
+
+template<typename ContainerType, template<typename... _> typename... Actions>
 struct container_wrapper : 
     action_wrapper<
         container_wrapper<ContainerType, Actions...>, 
         ContainerType,
-        default_history<Actions<ContainerType>...>, 
+        default_history<typename action_type<Actions, ContainerType>::Action...>, 
         Actions...
     >
 {
     using Container = ContainerType;
-    using History = default_history<Actions<ContainerType>...>;
+    using History = default_history<typename action_type<Actions, ContainerType>::Action...>;
 
     Container container;
-    History history;
+    mutable History history;
 
     template<typename T>
     container_wrapper(T t) : container(t), history({}) { std::cout << "container_wrapper create\n"; }
@@ -30,8 +33,9 @@ struct container_wrapper :
     container_wrapper& operator=(const container_wrapper&& cw) { std::cout << "container_wrapper operator= move\n"; if (this == &cw) { return *this; } container = std::move(cw.container); history = std::move(cw.history); return *this; }
 
     History& get_history() { return history; }
+    // for user it must be const container but it need to modify his hystory
+    History& get_history() const { return history; }
     Container& get_container() { return container; }
-    const History& get_history() const { return history; }
     const Container& get_container() const { return container; }
 };
 

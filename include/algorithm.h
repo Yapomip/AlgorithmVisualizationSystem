@@ -32,6 +32,7 @@ struct SetAllZero_impl {
     SetAllZero_impl() { std::cout << "Create Set All Zero impl" << std::endl; }
 
     void start(ContainerWrapper& mass) const {
+        std::cout << "call start from SetAllZero" << std::endl;
         for (size_t i = 0; i < mass.size(); ++i) {
             if (mass.compare(i, mass.size() / 2) == std::strong_ordering::greater) {
                 mass.set(i, static_cast<T>(-2));
@@ -40,8 +41,6 @@ struct SetAllZero_impl {
                 mass.set(i, 2);
             }
         }
-
-        std::cout << "call start from SetAllZero" << std::endl;
     }
 };
 
@@ -57,10 +56,10 @@ struct B {
     B() { std::cout << "Create B" << std::endl; }
 
     void start(WorkedType& mass) {
+        std::cout << "call g from B" << std::endl;
         for (size_t i = 0; i < mass.size(); ++i) {
             mass.set(i, static_cast<T>(1));
         }
-        std::cout << "call g from B" << std::endl;
     }
 };
 
