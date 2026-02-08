@@ -70,30 +70,41 @@ struct handler {
     }
 };
 
+void aaa(MassWrapper<int> c) {
+    for (auto i = 0; i < c.size(); ++i) {
+        c.set(i, 0);
+    }
+    c.set(0, 1);
+    c.set(1, 1);
+    for (auto i = 2; i < c.size(); ++i) {
+        c.set(i, 21);
+    }
+}
+
+
 // #include "a.h"
 
 int main() {
 
     // a::Massive<int> m;
-    
     algo_handler<SetAllZero<int>> handler;
     std::vector<int> data = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
     handler.start<SetAllZero<int>>(data);
-
+    // auto h = handler.get_history();
     std::visit(
         [](auto&& h) {
-            std::cout << h << std::endl;
+            std::cout << h.get() << std::endl;
         },
-        handler.get_history().value()
+        *handler.get_history()
     );
+
     
     /* how to want 
     handler<A, B>()
     
     */
-// handler
-/*
+    /*
     std::vector<int> data = {1, 2, 3, 4, 5};
     mass_history<int> h;
     MassWrapper<int> mw(data, h);
@@ -110,7 +121,7 @@ int main() {
     }
 
     std::cout << h << std::endl;
-*/
+    */
     // std::cout << f(A{}) << std::endl;
     // std::cout << f(B{}) << std::endl;
     // handler<A, B> handler("BBB");

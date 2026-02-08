@@ -6,62 +6,50 @@
 #include <variant>
 #include <optional>
 #include <thread>
+#include <functional>
 
-template<typename... Algs>
+template<typename... Algos>
 struct algo_handler {
-    std::optional<std::variant<Algs...>> activ_algo;
-    std::optional<std::variant<typename Algs::ContainerWrapper...>> container_wrapper;
+    using AlgoVariant = std::variant<Algos...>;
+    using ContainerWrapperVariant = std::variant<typename Algos::ContainerWrapper...>;
+    using HistoryVariant = std::variant<typename Algos::History...>;
+    using HistoryRefVariant = std::variant<std::reference_wrapper<typename Algos::History>...>;
+    using HistoryRefVariantConst = std::variant<std::reference_wrapper<const typename Algos::History>...>;
 
-    std::thread th;
-
+    std::optional<AlgoVariant> activ_algo;
+    std::optional<ContainerWrapperVariant> container_wrapper;
 
     template<typename Algo, typename ToContainerWrapper>
     void start(ToContainerWrapper to_data) {
         auto algo = Algo();
         auto data = typename Algo::ContainerWrapper(to_data);
-
-        // th = std::thread([algo, data](){
-        //     algo.start(data.get_container());
-        // });
-        // th.detach();
+        
         algo.start(data);
+
         activ_algo = algo;
-        container_wrapper = std::variant<typename Algs::ContainerWrapper...>(data);
+        container_wrapper = static_cast<ContainerWrapperVariant>(std::move(data));
     }
 
-    std::optional<std::variant<typename Algs::ContainerWrapper::History...>> get_history() {
+    std::optional<HistoryRefVariant> get_history() {
         if (container_wrapper) {
             return std::visit(
-                [](auto&& h){
-                    return h.get_history();
-                }, container_wrapper.value()
+                [](auto& h) {
+                    return static_cast<HistoryRefVariant>(std::ref(h.get_history()));
+                }, *container_wrapper
             );
+        
         }
         return std::nullopt;
     }
-    /*
-    void start(std::variant<Algs...> algo) {
-        th = [algo](){
-            algo.start();
-        };
-        th.detach();
-        activ_algo = algo;
+    std::optional<HistoryRefVariantConst> get_history() const {
+        if (container_wrapper) {
+            return std::visit(
+                [](auto& h) {
+                    return static_cast<HistoryRefVariantConst>(std::ref(h.get_history()));
+                }, *container_wrapper
+            );
+        
+        }
+        return std::nullopt;
     }
-
-    template<typename T>
-    void start_from_name(const std::string& Name) {
-        th = [](){};
-        th.detach();
-    }
-    */
 };
-
-/*
-
-
-
-algo_handler<SetAllZero<int>, BubleSort<int>, SelectionSort<int>> ah();
-
-algo_handler.get_history();
-
-*/

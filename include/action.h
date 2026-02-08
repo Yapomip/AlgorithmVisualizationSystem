@@ -23,7 +23,8 @@ struct set {
     }
 };
 template<typename ActionWrapper, typename ContainerType>
-struct name_method_wrapper<set, ActionWrapper, ContainerType> {
+struct name_method_wrapper<set<ContainerType>, ActionWrapper> {
+    // using Action = set<K, V>;
     using K = ::set<ContainerType>::K;
     using V = ::set<ContainerType>::V;
     void set(K i, V new_data) {
@@ -45,7 +46,7 @@ struct compare {
     
     compare(K index1, K index2) : index1(index1), index2(index2) {};
     
-    std::strong_ordering operator()(U& container) const {
+    std::strong_ordering operator()(const U& container) const {
         return container[index1] <= container[index2] ? 
             (container[index1] == container[index2] ? 
                 std::strong_ordering::equal : std::strong_ordering::less)
@@ -53,7 +54,7 @@ struct compare {
     }
 };
 template<typename ActionWrapper, typename ContainerType>
-struct name_method_wrapper<compare, ActionWrapper, ContainerType> {
+struct name_method_wrapper<compare<ContainerType>, ActionWrapper> {
     using K = ContainerType::key_type;
     std::strong_ordering compare(K i, K j) {
         return method_wrapper<ActionWrapper, ::compare>(this, i, j);
