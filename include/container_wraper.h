@@ -35,4 +35,8 @@ struct container_wrapper :
 };
 
 template<typename T>
-using MassWrapper = container_wrapper<std::vector<T>, set, compare>;
+struct vector_wrap : std::vector<T>{
+    using key_type = size_t;
+};
+template<typename T>
+using MassWrapper = container_wrapper<vector_wrap<T>, set, compare>;

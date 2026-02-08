@@ -3,18 +3,10 @@
 
 /* wrapper for method in container wrapper */
 template<typename Action, typename Container, typename History, typename... Args>
-decltype(auto) method_wrapper_impl(Container& c, History& h, Args&&... args) {
-    Action t = Action(args...);
-    h.add(t);
-
-    /* TODO */
-    // if constexpr (std::is_same_v<decltype(std::declval<Action>()(std::declval<Container>())), void>) {
-    //     t(c);
-    //     return;
-    // } else {
-    //     return t(c);
-    // }
-    return t(c);
+decltype(auto) method_wrapper_impl(Container& container, History& history, Args&&... args) {
+    Action action = Action(args...);
+    history.add(action);
+    return action(container);
 }
 
 template<typename ActionWrapper, typename From>

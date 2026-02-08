@@ -1,0 +1,28 @@
+{
+	"nodes":[
+		{"id":"f54cbcaa1521018c","type":"text","text":"HISTORY","x":-325,"y":-253,"width":250,"height":60,"color":"4"},
+		{"id":"782b457bda58bf5d","x":80,"y":-253,"width":250,"height":60,"color":"4","type":"text","text":"ACTION"},
+		{"id":"68170a9291d2be53","x":80,"y":-60,"width":250,"height":60,"color":"4","type":"text","text":"CONTAINER"},
+		{"id":"57038a90363561ec","x":380,"y":-253,"width":250,"height":60,"type":"text","text":"defаult action"},
+		{"id":"f23628d4018b9bde","x":-325,"y":-60,"width":250,"height":60,"color":"4","type":"text","text":"ALGORITM"},
+		{"id":"77d917a528f7c679","x":-411,"y":60,"width":423,"height":241,"type":"text","text":"template typename T\nvoid set_zeros(Massive T m) {\n    for (int i = 0; i < m.size(); ++i) {\n        m.set(i, 0);\n    }\n}\n\nMassive m = {1, 2, 3, 4, 5};\nhistory = history::execute(set_zeros, m)"},
+		{"id":"2d87c612cb5ed454","x":55,"y":60,"width":300,"height":241,"type":"text","text":"template typename T\nstruct Massive: set Massive {\nstd::vector T data;\n}\n "},
+		{"id":"5f9966f3fbeb6787","x":380,"y":60,"width":380,"height":241,"type":"text","text":"container wrapper\n\nу обертки контейнер есть ссылка на историю\naction записывают себя в историю обертки контейнер\nисторию обертки контейнер выставляет исстория перед исполнением"},
+		{"id":"02c1b8fd1816ccc9","x":1212,"y":-205,"width":250,"height":60,"color":"4","type":"text","text":"ACTIONS"},
+		{"id":"8ee1a5790a4e3c1c","x":1212,"y":-100,"width":250,"height":60,"color":"4","type":"text","text":"HISTORY"},
+		{"id":"20e78937cdf41d2f","x":880,"y":-205,"width":250,"height":60,"type":"text","text":""},
+		{"id":"03a4c3f2cffe49fe","x":1640,"y":-145,"width":250,"height":60,"color":"4","type":"text","text":"CONTAINER WRAPPER"},
+		{"id":"51a47da1b95184dd","x":1337,"y":112,"width":250,"height":60,"type":"text","text":"ACTION"}
+	],
+	"edges":[
+		{"id":"95c39774f5b39e62","fromNode":"f54cbcaa1521018c","fromSide":"right","toNode":"782b457bda58bf5d","toSide":"left"},
+		{"id":"b7f42a99800c9390","fromNode":"68170a9291d2be53","fromSide":"top","toNode":"782b457bda58bf5d","toSide":"bottom"},
+		{"id":"6d7c05c7844dc43f","fromNode":"f23628d4018b9bde","fromSide":"top","toNode":"782b457bda58bf5d","toSide":"bottom"},
+		{"id":"9cb20fcffa1f04d1","fromNode":"f23628d4018b9bde","fromSide":"right","toNode":"68170a9291d2be53","toSide":"left"},
+		{"id":"f1f6fff8fb554515","fromNode":"77d917a528f7c679","fromSide":"top","toNode":"f23628d4018b9bde","toSide":"bottom"},
+		{"id":"213d5ab67b760ec3","fromNode":"57038a90363561ec","fromSide":"left","toNode":"782b457bda58bf5d","toSide":"right"},
+		{"id":"ebeef385406a9283","fromNode":"8ee1a5790a4e3c1c","fromSide":"top","toNode":"02c1b8fd1816ccc9","toSide":"bottom"},
+		{"id":"a7db6510ee51b371","fromNode":"03a4c3f2cffe49fe","fromSide":"left","toNode":"8ee1a5790a4e3c1c","toSide":"right"},
+		{"id":"99bea2d8c39ea6ed","fromNode":"03a4c3f2cffe49fe","fromSide":"left","toNode":"02c1b8fd1816ccc9","toSide":"right"}
+	]
+}

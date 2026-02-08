@@ -70,7 +70,12 @@ struct handler {
     }
 };
 
+// #include "a.h"
+
 int main() {
+
+    // a::Massive<int> m;
+    
     algo_handler<SetAllZero<int>> handler;
     std::vector<int> data = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
@@ -82,11 +87,12 @@ int main() {
         },
         handler.get_history().value()
     );
+    
     /* how to want 
     handler<A, B>()
     
     */
-
+// handler
 /*
     std::vector<int> data = {1, 2, 3, 4, 5};
     mass_history<int> h;
