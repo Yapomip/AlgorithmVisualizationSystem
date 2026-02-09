@@ -30,6 +30,9 @@ struct algo_handler {
         container_wrapper = static_cast<ContainerWrapperVariant>(std::move(data));
     }
 
+    std::optional<ContainerWrapperVariant>& get_container_wrapper() {
+        return container_wrapper;
+    }
     std::optional<HistoryRefVariant> get_history() {
         if (container_wrapper) {
             return std::visit(
@@ -41,7 +44,7 @@ struct algo_handler {
         }
         return std::nullopt;
     }
-    std::optional<HistoryRefVariantConst> get_history() const {
+    [[nodiscard]] std::optional<HistoryRefVariantConst> get_history() const {
         if (container_wrapper) {
             return std::visit(
                 [](auto& h) {

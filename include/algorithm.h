@@ -1,12 +1,15 @@
 
 #pragma once
 
+#include <algorithm>
+#include <array>
+
 #include "container_wraper.h"
 
 /* not use in example */
 template<typename T>
 struct defoult_algorithm {
-    inline static const char* Name = "Defoult Algorithm";
+    inline static const char* name = "Defoult Algorithm";
     using WorkedType = MassWrapper<T>;
 
     defoult_algorithm() { std::cout << "Create defoult algorithm" << std::endl; }
@@ -22,14 +25,14 @@ struct defoult_algorithm {
 
 /* not use in example */
 template<template<typename... ContainerArgs> typename ContainerWrapperType, typename... Args>
-struct SetAllZero_impl {
-    inline static const char* Name = "Set All Zero";
+struct set_all_zero_impl {
+    inline static const char* name = "Set All Zero";
     using ContainerWrapper = ContainerWrapperType<Args...>;
     using Container = ContainerWrapper::Container;
     using History = ContainerWrapper::History;
     using T = Container::value_type;
 
-    SetAllZero_impl() { std::cout << "Create Set All Zero impl" << std::endl; }
+    set_all_zero_impl() { std::cout << "Create Set All Zero impl" << std::endl; }
 
     void start(ContainerWrapper& mass) const {
         std::cout << "call start from SetAllZero" << std::endl;
@@ -45,18 +48,18 @@ struct SetAllZero_impl {
 };
 
 template<typename T>
-using SetAllZero = SetAllZero_impl<MassWrapper, T>;
+using SetAllZero = set_all_zero_impl<MassWrapper, T>;
 
 /* not use in example */
 template<typename T>
-struct B {
-    inline static const char* Name = "BBB";
+struct b {
+    inline static const char* name = "BBB";
     using WorkedType = MassWrapper<T>;
 
-    B() { std::cout << "Create B" << std::endl; }
+    b() { std::cout << "Create b" << std::endl; }
 
     void start(WorkedType& mass) {
-        std::cout << "call g from B" << std::endl;
+        std::cout << "call g from b" << std::endl;
         for (size_t i = 0; i < mass.size(); ++i) {
             mass.set(i, static_cast<T>(1));
         }
@@ -65,16 +68,17 @@ struct B {
 
 namespace help {
     template<size_t N>
-    struct FixedString {
-        char data[N];
-        constexpr FixedString(const char (&str)[N]) {
-            std::copy_n(str, N, data);
+    struct fixed_string {
+        std::array<char, N> data;
+        // NOLINTNEXTLINE(cppcoreguidelines-avoid-c-arrays, modernize-avoid-c-arrays)
+        constexpr explicit fixed_string(const char (&str)[N]) {
+            std::copy_n(str, N, data.data);
         }
     };
-};
+}; // namespace help
 
 /*
-template<help::FixedString Name, template<typename T> typename ContainerWrapperType>
+template<help::fixed_string Name, template<typename T> typename ContainerWrapperType>
 struct AlgoFromFunction {
     using ContainerWrapper = ContainerType<Args...>;
     using Container = ContainerWrapper::Container;

@@ -1,25 +1,28 @@
 
 #pragma once
 
+#include <cstddef>
+
 #include "action.h"
 
-template<typename T>
-concept ActionConcept = requires(T a) {
-    { a() } -> std::same_as<void>;
-};
+// TODO(yapomip): CONCEPT
+// template<typename T>
+// concept ActionConcept = requires(T a) {
+//     { a() } -> std::same_as<void>;
+// };
 
 template<
     // type of previous level attachment
-    typename ContainerWrapperType, 
     typename ContainerType, 
     typename HistoryType, 
+    typename ContainerWrapperType,
     template<typename... _> typename... Actions
 >
 struct action_wrapper : 
     name_method_wrapper<
         Actions, 
         ContainerType,
-        action_wrapper<ContainerWrapperType, ContainerType, HistoryType, Actions...>
+        action_wrapper<ContainerType, HistoryType, ContainerWrapperType, Actions...>
     >...
 {
     using ContainerWrapper = ContainerWrapperType;
@@ -28,10 +31,10 @@ struct action_wrapper :
 
     History& get_history() { return static_cast<ContainerWrapper*>(this)->get_history(); }
     Container& get_container() { return static_cast<ContainerWrapper*>(this)->get_container(); }
-    History& get_history() const { return static_cast<const ContainerWrapper*>(this)->get_history(); }
-    const Container& get_container() const { return static_cast<const ContainerWrapper*>(this)->get_container(); }
+    [[nodiscard]] History& get_history() const { return static_cast<const ContainerWrapper*>(this)->get_history(); }
+    [[nodiscard]] const Container& get_container() const { return static_cast<const ContainerWrapper*>(this)->get_container(); }
     /* TODO action */
-    size_t size() const {
+    [[nodiscard]] size_t size() const {
         return get_container().size();
     }
 };

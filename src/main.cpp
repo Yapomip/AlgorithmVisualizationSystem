@@ -16,7 +16,7 @@ concept Algoritm = requires(T t) {
 };
 
 template<Algoritm N>
-std::string f(N n) {
+std::string f(N _) {
     return N::Name; 
 }
 
@@ -30,11 +30,11 @@ concept MassContainer = requires(T t, size_t i, size_t j) {
 
 /* not use in example */
 template<typename T>
-struct A {
-    inline static const char* Name = "AAA";
+struct a {
+    inline static const char* name = "AAA";
     using WorkedType = MassWrapper<T>;
 
-    A() { std::cout << "Create A" << std::endl; }
+    a() { std::cout << "Create A" << std::endl; }
 
     void start(WorkedType& mass) {
         for (size_t i = 0; i < mass.size(); ++i) {
@@ -51,8 +51,8 @@ requires (Algoritm<Types> && ...) && (std::default_initializable<Types> && ...)
 struct handler {
     std::optional<std::variant<Types...>> n;
 
-    handler(const std::string& name) : n(std::nullopt) {
-        bool is_init = (((name == Types::Name) ? (n = Types(), true) : false) || ...);
+    explicit handler(const std::string& _) : n(std::nullopt) {
+        // bool is_init = (((name == Types::Name) ? (n = Types(), true) : false) || ...);
 
         if (n) {
             std::cout << "Initial index: " << n.value().index() << std::endl;
@@ -71,12 +71,12 @@ struct handler {
 };
 
 void aaa(MassWrapper<int> c) {
-    for (auto i = 0; i < c.size(); ++i) {
+    for (size_t i = 0; i < c.size(); ++i) {
         c.set(i, 0);
     }
     c.set(0, 1);
     c.set(1, 1);
-    for (auto i = 2; i < c.size(); ++i) {
+    for (size_t i = 2; i < c.size(); ++i) {
         c.set(i, 21);
     }
 }
@@ -86,6 +86,20 @@ void aaa(MassWrapper<int> c) {
 
 int main() {
 
+    std::map<size_t, int> map{
+        {0, 1},
+        {1, 2},
+        {2, 3},
+        {3, 4},
+        {4, 5},
+        {5, 6},
+        {6, 7},
+        {7, 8},
+        {8, 9},
+        {9, 10},
+    };
+
+    map_wrap<int> map_container(map);
     // a::Massive<int> m;
     algo_handler<SetAllZero<int>> handler;
     std::vector<int> data = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
@@ -96,10 +110,40 @@ int main() {
         [](auto&& h) {
             std::cout << h.get() << std::endl;
         },
-        *handler.get_history()
+        handler.get_history().value()
     );
 
-    
+    std::visit(
+        [&map_container](auto&& h) {
+            auto order_vec = h.get().get_order();
+
+            for (auto& action_option : order_vec) {
+                std::visit(
+                    [&map_container](auto&& action) {
+                        apply_action(action, map_container);
+                    },
+                    action_option
+                );
+            }
+        },
+        handler.get_history().value()
+    );
+
+    std::visit(
+        [](auto&& h) {
+            auto&& c = h.get_container();
+            
+            for (size_t i = 0; i < 10; ++i) {
+                std::cout << i << " " << c[i] << std::endl;
+            }
+        },
+        handler.get_container_wrapper().value()
+    );
+
+
+    for (size_t i = 0; i < 10; ++i) {
+        std::cout << i << " " << map_container[i] << std::endl;
+    }
     /* how to want 
     handler<A, B>()
     

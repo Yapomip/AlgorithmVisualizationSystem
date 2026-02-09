@@ -2,6 +2,7 @@
 #pragma once
 
 #include <ostream>
+#include <optional>
 
 #include "action_wraper.h"
 
@@ -28,7 +29,13 @@ struct action_type<set, ContainerType> {
     using Action = ::set<K, V>;
 };
 
-// This will be in container
+template<typename ContainerType>
+void apply_action(typename action_type<set, ContainerType>::Action& a, ContainerType& container) {
+    a.old_data = container[a.index];
+    container[a.index] = a.new_data;
+}
+
+// This will be in container, CRTP
 template<typename ContainerType, typename ActionWrapper>
 struct name_method_wrapper<set, ContainerType, ActionWrapper> {
     using type = action_type<set, ContainerType>;
