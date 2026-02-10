@@ -10,6 +10,24 @@
 #include "set.h"
 #include "compare.h"
 
+namespace help {
+    template<typename Action, typename = void>
+    struct dummy_plug {
+        using Type = help::tpack<>;
+    };
+
+    template<
+        typename Container,
+        template<typename... _> typename... Actions
+    >
+    using unite_action_with_include_to_history = typename includer<Container, dummy_plug, get_action_include_to_history>::template 
+        get_all_includes<
+            tpack<Actions...>, 
+            pack<>
+        >::Type;
+
+}; // namespace help
+
 template<typename ContainerType, template<typename... _> typename... Actions>
 struct container_wrapper : 
     action_wrapper_with_include<
@@ -19,7 +37,8 @@ struct container_wrapper :
     >
 {
     using Container = ContainerType;
-    using History = default_history<typename action_type<Actions, ContainerType>::Action...>;
+    // using History = default_history<typename action_type<Actions, ContainerType>::Action...>;
+    using History = help::unpack<help::unite_action_with_include_to_history<Container, Actions...>, default_history>::Type;
 
     Container container;
     mutable History history;

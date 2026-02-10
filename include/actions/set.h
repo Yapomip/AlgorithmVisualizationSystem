@@ -1,4 +1,7 @@
 
+template<typename K, typename V>
+struct set;
+
 #pragma once
 
 #include <ostream>
@@ -15,8 +18,6 @@ struct set {
     V new_data;
     std::optional<V> old_data;
 
-    using IncludeToWrap = include_actions<compare>;
-    using IncludeToHistory = include_actions<compare>;
 };
 
 template<typename ContainerType>
@@ -24,6 +25,9 @@ struct action_type<set, ContainerType> {
     using K = ContainerType::key_type;
     using V = ContainerType::value_type;
     using Action = set<K, V>;
+
+    using IncludeToWrap = include_actions<compare>;
+    using IncludeToHistory = include_actions<compare>;
 };
 
 template<typename ContainerType>

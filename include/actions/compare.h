@@ -1,15 +1,22 @@
 
+template<typename K>
+struct compare;
+
 #pragma once
 
 #include <ostream>
 
 #include "action_wraper.h"
+#include "set.h"
 
 /* action compare for container */
 template<typename K>
 struct compare {
     K index1;
     K index2;
+
+    using IncludeToWrap = include_actions<set>;
+    using IncludeToHistory = include_actions<set>;
 };
 
 template<typename ContainerType>

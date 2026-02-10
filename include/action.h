@@ -31,6 +31,20 @@ namespace help {
     struct join<pack<Types1...>, pack<Types2...>, Types3...> {
         using Type = join<pack<Types1..., Types2...>, Types3...>::Type;
     };
+    
+    template<typename... Types>
+    struct tjoin {
+        using Type = join<Types...>;
+    };
+    template<template<typename... _> typename... Types>
+    struct tjoin<tpack<Types...>> {
+        using Type = tpack<Types...>;
+    };
+    template<template<typename... _> typename... Types1, template<typename... _> typename... Types2, typename... Types3>
+    struct tjoin<tpack<Types1...>, tpack<Types2...>, Types3...> {
+        using Type = tjoin<tpack<Types1..., Types2...>, Types3...>::Type;
+    };
+
 
     template<typename Pack, template<typename... _> typename To, typename... Types>
     struct unpack {};
@@ -41,10 +55,17 @@ namespace help {
 
     template <typename T, typename... Types>
     struct is_contains : std::disjunction<std::is_same<T, Types>...> {};
-    template <typename T, typename... Ts>
-    struct is_contains<T, pack<Ts...>> : std::disjunction<std::is_same<T, Ts>...> {};
+    template <typename T, typename... Types>
+    struct is_contains<T, pack<Types...>> : std::disjunction<std::is_same<T, Types>...> {};
     template<typename T, typename... Types>
     constexpr bool is_contains_v = is_contains<T, Types...>::value;
+
+    // template <template<typename... _> typename T, template<typename... _> typename... Types>
+    // struct is_tcontains : std::disjunction<std::is_same<T, Types>...> {};
+    // template <template<typename... _> typename T, template<typename... _> typename... Types>
+    // struct is_tcontains<T, tpack<Types...>> : std::disjunction<std::is_same<T, Types>...> {};
+    // template <template<typename... _> typename T, template<typename... _> typename... Types>
+    // constexpr bool is_tcontains_v = is_contains<T, Types...>::value;
 
     template<typename In, typename Out>
     struct unique_impl;
@@ -124,6 +145,8 @@ struct name_method_wrapper {};
 template<template<typename... _> typename... Actions>
 using include_actions = help::tpack<Actions...>;
 
+/* Include to history */
+
 template<typename Action, typename = void>
 struct get_action_include_to_wrap {
     using Type = help::tpack<>;
@@ -134,6 +157,36 @@ struct get_action_include_to_wrap<Action, std::void_t<typename Action::IncludeTo
     using Type = std::conditional_t<
         help::is_tpack_v<typename Action::IncludeToWrap>,
         typename Action::IncludeToWrap,
+        help::tpack<>
+    >;
+};
+
+template<template<typename... _> typename Action, typename Container, typename = void>
+struct get_action_include_to_wrap2 {
+    using Type = help::tpack<>;
+};
+
+template<template<typename... _> typename  Action, typename Container>
+struct get_action_include_to_wrap2<Action, Container, std::void_t<typename action_type<Action, Container>::IncludeToWrap>> {
+    using Type = std::conditional_t<
+        help::is_tpack_v<typename action_type<Action, Container>::IncludeToWrap>,
+        typename action_type<Action, Container>::IncludeToWrap,
+        help::tpack<>
+    >;
+};
+
+/* Include to history */
+
+template<template<typename... _> typename Action, typename Container, typename = void>
+struct get_action_include_to_history {
+    using Type = help::tpack<>;
+};
+
+template<template<typename... _> typename  Action, typename Container>
+struct get_action_include_to_history<Action, Container, std::void_t<typename action_type<Action, Container>::IncludeToHistory>> {
+    using Type = std::conditional_t<
+        help::is_tpack_v<typename action_type<Action, Container>::IncludeToHistory>,
+        typename action_type<Action, Container>::IncludeToHistory,
         help::tpack<>
     >;
 };
