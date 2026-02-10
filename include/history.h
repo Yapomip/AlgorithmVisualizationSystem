@@ -6,6 +6,8 @@
 #include <vector>
 #include <variant>
 
+#include "action.h"
+
 namespace help {
     template <typename T, typename... Types>
     struct index_in {};
@@ -28,17 +30,27 @@ namespace help {
     inline constexpr std::size_t index_in_v = index_in<T, Types...>::value;
 }; // namespace help
 
+/* 
+ * DEFINES
+ */
 template <typename... Types>
 struct default_history;
 
 template <typename... Types>
 std::ostream& operator<<(std::ostream &out, const default_history<Types...>& h);
 
+/* 
+ * VOID CASE
+ */
 template <>
 struct default_history<> {
     template<typename T>
     void add(T&& _) {
         std::cout << "bad history add" << std::endl;
+    }
+    std::vector<int> get_order() const {
+        std::cout << "bad history add" << std::endl;
+        return {};
     }
 };
 template <>
@@ -47,6 +59,9 @@ std::ostream& operator<<(std::ostream &out, const default_history<>& _) {
     return out;
 }
 
+/* 
+ * COMMON CASE
+ */
 template <typename... Types>
 struct default_history {
     using StorageType = std::tuple<std::vector<Types>...>;
@@ -67,11 +82,16 @@ struct default_history {
         order.emplace_back(help::index_in_v<std::decay_t<T>, Types...>, place.size());
         place.emplace_back(std::forward<T>(action));
     }
+    template <typename T>
+    requires(!(std::is_same_v<std::decay_t<T>, Types> || ...))
+    void add(T&& action) {
+        std::cout << "not add " << action << std::endl;
+    }
 
-    using OrderVec = std::vector<std::variant<Types...>>;
+    using OrderVariantVec = std::vector<std::variant<Types...>>;
 
-    OrderVec get_order() const {
-        OrderVec res;
+    OrderVariantVec get_order() const {
+        OrderVariantVec res;
         std::vector<std::variant<const std::vector<Types>* ...>> vec_ptr;
 
         std::apply(
@@ -94,13 +114,11 @@ struct default_history {
 
 template <typename... Types>
 std::ostream& operator<<(std::ostream &out, const default_history<Types...>& h) {
-    // using VecPtrVariant = std::variant<const std::vector<Types>* ...>;
-    // std::vector<VecPtrVariant> vec_ptr;
-    // using PointersVarint = std::variant<const std::vector<Types>* ...>;
+    using VecConstPtrVariant = std::variant<const std::vector<Types>* ...>;
+    std::vector<VecConstPtrVariant> vec_ptr;
 
-    std::vector<std::variant<const std::vector<Types>* ...>> vec_ptr;
     std::apply(
-        [&out, &vec_ptr](const std::vector<Types> &...vectors) -> void
+        [&out](const std::vector<Types>&... vectors) -> void
         {
             auto f = [&out](auto &&vector)
             {
@@ -112,6 +130,12 @@ std::ostream& operator<<(std::ostream &out, const default_history<Types...>& h) 
                 out << std::endl;
             };
             (f(vectors), ...);
+        },
+        h.all
+    );
+    std::apply(
+        [&vec_ptr](const std::vector<Types>&... vectors) -> void
+        {
             (vec_ptr.push_back(&vectors), ...);
         },
         h.all
@@ -119,9 +143,9 @@ std::ostream& operator<<(std::ostream &out, const default_history<Types...>& h) 
 
     for (auto &p : h.order) {
         std::visit(
-            [&p](auto&& vec)
+            [&out, &p](auto&& vec)
             {
-                std::cout << (*vec)[p.second] << std::endl;
+                out << (*vec)[p.second] << std::endl;
             },
             vec_ptr[p.first]
         );

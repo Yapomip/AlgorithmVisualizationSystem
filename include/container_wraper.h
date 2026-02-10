@@ -12,9 +12,8 @@
 
 template<typename ContainerType, template<typename... _> typename... Actions>
 struct container_wrapper : 
-    action_wrapper<
+    action_wrapper_with_include<
         ContainerType,
-        default_history<typename action_type<Actions, ContainerType>::Action...>, 
         container_wrapper<ContainerType, Actions...>,
         Actions...
     >
@@ -37,6 +36,10 @@ struct container_wrapper :
     History& get_history() const { return history; }
     Container& get_container() { return container; }
     const Container& get_container() const { return container; }
+
+    [[nodiscard]] size_t size() const {
+        return get_container().size();
+    }
 };
 
 template<typename T>
@@ -44,7 +47,7 @@ struct vector_wrap : std::vector<T> {
     using key_type = size_t;
 };
 template<typename T>
-using MassWrapper = container_wrapper<vector_wrap<T>, set, compare>;
+using MassWrapper = container_wrapper<vector_wrap<T>, set>;
 
 #include <map>
 
@@ -54,7 +57,7 @@ struct map_wrap : std::map<size_t, T> {
     using value_type = T;
 };
 template<typename T>
-using MapWrapper = container_wrapper<map_wrap<T>, set, compare>;
+using MapWrapper = container_wrapper<map_wrap<T>, set>;
 
 
 template<typename T>
@@ -67,3 +70,10 @@ void apply_action(typename action_type<set, map_wrap<T>>::Action& a, map_wrap<T>
     }
 }
 
+// typename set<size_t, int>::IncludeToWrap gg = 0;
+// std::map m = help::is_tpack_v<typename set<size_t, int>::IncludeToWrap>;
+// get_action_include_to_wrap<set<size_t, int>>::Type bbb = 0;
+
+// help::includer<get_action_include_to_wrap, map_wrap<int>>::template get_action_type_from_tpack<help::tpack<compare>>::Type arr = 0;
+// help::join<help::pack<>, help::pack<compare<unsigned long>>>::Type ggb = 0;
+// help::unite_action_with_include<map_wrap<int>, set> aa = 0;

@@ -10,12 +10,6 @@ template<typename K>
 struct compare {
     K index1;
     K index2;
-    
-    compare(K index1, K index2) : index1(index1), index2(index2) {};
-    
-    template<typename U>
-    [[nodiscard]] std::strong_ordering operator()(const U& container) const {
-    }
 };
 
 template<typename ContainerType>
@@ -35,15 +29,10 @@ std::strong_ordering apply_action(const typename action_type<compare, ContainerT
     return std::strong_ordering::greater;
 }
 
-
-template<typename ContainerType, typename ActionWrapper>
-struct name_method_wrapper<compare, ContainerType, ActionWrapper> {
-    using type = action_type<compare, ContainerType>;
-    using K = typename type::K;
-    using Action = typename type::Action;
-
+template<typename K, typename ContainerWrapperType>
+struct name_method_wrapper<compare<K>, ContainerWrapperType> {
     [[nodiscard]] std::strong_ordering compare(K i, K j) const {
-        return method_wrapper<Action, const ActionWrapper>(this, i, j);
+        return method_wrapper<::compare<K>, const ContainerWrapperType>(this, i, j);
     }
 };
 template<typename K>
