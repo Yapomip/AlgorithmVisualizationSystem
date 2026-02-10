@@ -82,10 +82,7 @@ void aaa(MassWrapper<int> c) {
 }
 
 
-// #include "a.h"
-
 int main() {
-
     std::map<size_t, int> map{
         {0, 1},
         {1, 2},
@@ -101,10 +98,10 @@ int main() {
 
     map_wrap<int> map_container(map);
     // a::Massive<int> m;
-    algo_handler<SetAllZero<int>> handler;
+    algo_handler<SetAllZero<vector_wrap<int>>> handler;
     std::vector<int> data = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
 
-    handler.start<SetAllZero<int>>(data);
+    handler.start<SetAllZero<vector_wrap<int>>>(data);
     // auto h = handler.get_history();
     std::visit(
         [](auto&& h) {
@@ -140,6 +137,7 @@ int main() {
         handler.get_container_wrapper().value()
     );
 
+    std::cout << std::endl;
 
     for (size_t i = 0; i < 10; ++i) {
         std::cout << i << " " << map_container[i] << std::endl;

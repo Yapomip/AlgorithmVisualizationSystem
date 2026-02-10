@@ -36,19 +36,26 @@ struct set_all_zero_impl {
 
     void start(ContainerWrapper& mass) const {
         std::cout << "call start from SetAllZero" << std::endl;
-        for (size_t i = 0; i < mass.size(); ++i) {
-            if (mass.compare(i, mass.size() / 2) == std::strong_ordering::greater) {
-                mass.set(i, static_cast<T>(-2));
-            } else {
-                // mass.set(i, static_cast<T>(2));
-                mass.set(i, 2);
-            }
+
+        // for (size_t i = 0; i < mass.size(); ++i) {
+        //     if (mass[i] < mass[mass.size() / 2]) {
+        //         mass[i] = static_cast<T>(-2);
+        //     } else {
+        //         // mass.set(i, static_cast<T>(2));
+        //         mass[i] = 2;
+        //     }
+        // }
+
+        mass[0] = 1;
+        mass[1] = 1;
+        for (size_t i = 2; i < mass.size(); ++i) {
+            mass[i] = mass[i - 1];
         }
     }
 };
 
 template<typename T>
-using SetAllZero = set_all_zero_impl<MassWrapper, T>;
+using SetAllZero = set_all_zero_impl<MassWrapper2, T>;
 
 /* not use in example */
 template<typename T>
@@ -100,5 +107,4 @@ struct AlgoFromFunction {
         std::cout << "call start from SetAllZero" << std::endl;
     }
 };
-
 */

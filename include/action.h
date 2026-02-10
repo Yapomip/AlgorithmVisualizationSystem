@@ -233,7 +233,7 @@ decltype(auto) method_wrapper(NameMethodWrapperImplType* nmw, Args&&... args) {
 
 /* Help for get action wrapper */
 template<typename ContainerWrapperType, typename NameMethodWrapperImplType>
-decltype(auto) get_action_wrapper(NameMethodWrapperImplType* ptr) {
+decltype(auto) get_container_wrapper(NameMethodWrapperImplType* ptr) {
     return *static_cast<ContainerWrapperType*>(ptr);
 }
 

@@ -9,6 +9,7 @@
 
 #include "set.h"
 #include "compare.h"
+#include "element.h"
 
 namespace help {
     template<typename Action, typename = void>
@@ -66,7 +67,10 @@ struct vector_wrap : std::vector<T> {
     using key_type = size_t;
 };
 template<typename T>
-using MassWrapper = container_wrapper<vector_wrap<T>, set>;
+using MassWrapper = container_wrapper<vector_wrap<T>, set, element>;
+
+template<typename T>
+using MassWrapper2 = container_wrapper<T, element>;
 
 #include <map>
 
@@ -76,16 +80,26 @@ struct map_wrap : std::map<size_t, T> {
     using value_type = T;
 };
 template<typename T>
-using MapWrapper = container_wrapper<map_wrap<T>, set>;
+using MapWrapper = container_wrapper<map_wrap<T>, element>;
 
 
 template<typename T>
 void apply_action(typename action_type<set, map_wrap<T>>::Action& a, map_wrap<T>& container) {
+    using K = action_type<compare, map_wrap<T>>::K;
+    using V = action_type<compare, map_wrap<T>>::V;
+
     a.old_data = container[a.index];
     if (a.index == 6) {
         container[a.index] = 1000;
     } else {
-        container[a.index] = a.new_data;
+        std::visit(overloaded {
+            [&](const Key<K>& key) {
+                container[a.index] = container[key.value];
+            },
+            [&](const Value<V>& value) {
+                container[a.index] = value.value;
+            },
+        }, a.new_data);
     }
 }
 

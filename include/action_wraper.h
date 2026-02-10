@@ -43,7 +43,7 @@ namespace help {
         struct get_all_includes<tpack<>, pack<Out...>> {
             using Type = pack<Out...>;
         };
-        
+
         template<template<typename... _> typename T, template<typename... _> typename... In, typename... Out>
         requires requires() { 
             typename GetIncludies1<typename action_type<T, Container>::Action>::Type; 
@@ -65,17 +65,6 @@ namespace help {
         };
     };
     
-    // template<
-    //     typename Container,
-    //     template<typename... _> typename... Actions
-    // >
-    // using unite_action_with_include = remove_doubles<
-    //     typename join<
-    //         pack<typename action_type<Actions, Container>::Action...>, 
-    //         // typename action_type<Actions, Container>::IncludeToWrap...
-    //         typename get_action_include_wrap<Container, Actions>::Type...
-    //     >::Type
-    // >::Type;
     template<
         typename Container,
         template<typename... _> typename... Actions
