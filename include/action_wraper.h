@@ -11,24 +11,6 @@
 //     { a() } -> std::same_as<void>;
 // };
 
-template<
-    typename ContainerWrapper,
-    typename... Actions
->
-struct action_wrapper_impl : 
-    name_method_wrapper<
-        Actions, 
-        ContainerWrapper
-    >...
-{};
-
-template<
-    typename Container,
-    typename ContainerWrapper,
-    template<typename... _> typename... Actions
->
-using action_wrapper = action_wrapper_impl<ContainerWrapper, typename action_type<Actions, Container>::Action...>;
-
 namespace help {
     template<
         typename Container,
@@ -46,20 +28,20 @@ namespace help {
 
         template<template<typename... _> typename T, template<typename... _> typename... In, typename... Out>
         requires requires() { 
-            typename GetIncludies1<typename action_type<T, Container>::Action>::Type; 
+            typename GetIncludies1<typename actions::action_type<T, Container>::Action>::Type; 
             typename GetIncludies2<T, Container>::Type; 
         }
         struct get_all_includes<tpack<T, In...>, pack<Out...>> {
             using Type = typename std::conditional_t<
-                is_contains_v<typename action_type<T, Container>::Action, Out...>,
+                is_contains_v<actions::action_type<T, Container>, Out...>,
                 get_all_includes<tpack<In...>, pack<Out...>>,
                 get_all_includes<
                     typename tjoin<
                         tpack<In...>, 
-                        typename GetIncludies1<typename action_type<T, Container>::Action>::Type,
+                        typename GetIncludies1<typename actions::action_type<T, Container>::Action>::Type,
                         typename GetIncludies2<T, Container>::Type
                     >::Type,
-                    pack<Out..., typename action_type<T, Container>::Action>
+                    pack<Out..., actions::action_type<T, Container>>
                 >
             >::Type;
         };
@@ -69,13 +51,30 @@ namespace help {
         typename Container,
         template<typename... _> typename... Actions
     >
-    using unite_action_with_include_to_wrap = typename includer<Container, get_action_include_to_wrap, get_action_include_to_wrap2>::template 
+    using unite_action_with_include_to_wrap = typename includer<Container, actions::get_action_include_to_wrap, actions::get_action_include_to_wrap2>::template 
         get_all_includes<
             tpack<Actions...>, 
             pack<>
         >::Type;
 
 }; //namespace help
+
+namespace actions {
+
+template<
+    typename ContainerWrapper,
+    typename... ActionType
+>
+struct action_wrapper_impl : 
+    ActionType::template name_method_wrapper<ContainerWrapper>...
+{};
+
+template<
+    typename Container,
+    typename ContainerWrapper,
+    template<typename... _> typename... Actions
+>
+using action_wrapper = action_wrapper_impl<ContainerWrapper, action_type<Actions, Container>...>;
 
 
 template<
@@ -88,3 +87,5 @@ using action_wrapper_with_include = typename help::unpack<
     action_wrapper_impl, 
     ContainerWrapper
 >::Type;
+
+}; // namespace actions

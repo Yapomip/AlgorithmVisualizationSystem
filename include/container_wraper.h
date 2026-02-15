@@ -10,8 +10,18 @@
 #include "set.h"
 #include "compare.h"
 #include "element.h"
+#include "add_mul_sub_div.h"
+
+using namespace actions;
 
 namespace help {
+    template<typename Pack>
+    struct get_actions_from_action_type {};
+    template<typename... ActionTypes>
+    struct get_actions_from_action_type<pack<ActionTypes...>> {
+        using Type = pack<typename ActionTypes::Action...>;
+    };
+
     template<typename Action, typename = void>
     struct dummy_plug {
         using Type = help::tpack<>;
@@ -21,17 +31,17 @@ namespace help {
         typename Container,
         template<typename... _> typename... Actions
     >
-    using unite_action_with_include_to_history = typename includer<Container, dummy_plug, get_action_include_to_history>::template 
+    using unite_action_with_include_to_history = get_actions_from_action_type<typename includer<Container, dummy_plug, actions::get_action_include_to_history>::template 
         get_all_includes<
             tpack<Actions...>, 
             pack<>
-        >::Type;
+        >::Type>::Type;
 
 }; // namespace help
 
 template<typename ContainerType, template<typename... _> typename... Actions>
 struct container_wrapper : 
-    action_wrapper_with_include<
+    actions::action_wrapper_with_include<
         ContainerType,
         container_wrapper<ContainerType, Actions...>,
         Actions...
@@ -64,13 +74,15 @@ struct container_wrapper :
 
 template<typename T>
 struct vector_wrap : std::vector<T> {
+    using value_type = T;
     using key_type = size_t;
 };
-template<typename T>
-using MassWrapper = container_wrapper<vector_wrap<T>, set, element>;
 
 template<typename T>
-using MassWrapper2 = container_wrapper<T, element>;
+using MassWrapper = container_wrapper<vector_wrap<T>, actions::set, actions::element>;
+
+template<typename T>
+using MassWrapper2 = container_wrapper<T, actions::element>;
 
 #include <map>
 
@@ -79,14 +91,14 @@ struct map_wrap : std::map<size_t, T> {
     using key_type = size_t;
     using value_type = T;
 };
-template<typename T>
-using MapWrapper = container_wrapper<map_wrap<T>, element>;
+// template<typename T>
+// using MapWrapper = container_wrapper<map_wrap<T>, actions::element>;
 
-
-template<typename T>
-void apply_action(typename action_type<set, map_wrap<T>>::Action& a, map_wrap<T>& container) {
-    using K = action_type<compare, map_wrap<T>>::K;
-    using V = action_type<compare, map_wrap<T>>::V;
+// TODO rewrite
+template<typename T>// , typename K = size_t, typename V = T>
+void apply_action(actions::set<size_t, T>& a, map_wrap<T>& container) {
+    using K = size_t;
+    using V = T;
 
     a.old_data = container[a.index];
     if (a.index == 6) {

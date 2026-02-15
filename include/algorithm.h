@@ -45,11 +45,15 @@ struct set_all_zero_impl {
         //         mass[i] = 2;
         //     }
         // }
-
+        for (size_t i = 0; i < mass.size(); ++i) {
+            mass[i] = 0;
+        }
         mass[0] = 1;
         mass[1] = 1;
         for (size_t i = 2; i < mass.size(); ++i) {
-            mass[i] = mass[i - 1];
+            mass[i] += mass[i - 2];
+            mass[i] += mass[i - 1];
+            std::cout << mass[i] << std::endl;
         }
     }
 };

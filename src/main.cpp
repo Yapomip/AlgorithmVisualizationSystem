@@ -6,8 +6,8 @@
 #include <iostream>
 #include <memory>
 
-#include "algo_handler.h"
 #include "algorithm.h"
+#include "algo_handler.h"
 
 template<typename T>
 concept Algoritm = requires(T t) {

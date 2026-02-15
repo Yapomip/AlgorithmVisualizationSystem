@@ -56,7 +56,7 @@ namespace help {
     template <typename T, typename... Types>
     struct is_contains : std::disjunction<std::is_same<T, Types>...> {};
     template <typename T, typename... Types>
-    struct is_contains<T, pack<Types...>> : std::disjunction<std::is_same<T, Types>...> {};
+    struct is_contains<T, pack<Types...>> : is_contains<T, Types...> {};
     template<typename T, typename... Types>
     constexpr bool is_contains_v = is_contains<T, Types...>::value;
 
@@ -96,6 +96,8 @@ namespace help {
     };
 }; // namespace help
 
+namespace actions {
+
 /*
  * REQUIRED FOR ACTION
  */
@@ -112,26 +114,16 @@ template<
 >
 struct action_type {};
 
-/* Sugar */
-template<
-    template<typename... _> typename Action,
-    typename Container
->
-using action = action_type<Action, Container>::Action;
-
-/* Define action to container */
-template<template<typename... _> typename Action, typename ContainerType>
-void apply_action(typename action_type<Action, ContainerType>::Action& _a, ContainerType& _c) {
-    std::cout << "void action" << std::endl;
+/* Define usage action to container */
+template<typename ContainerType, template<typename... _> typename Action, typename... Args>
+void apply_action(Action<Args...>& _a, ContainerType& _c) {
+    // std::cout << "void action" << std::endl;
+    if constexpr (requires () { action_type<Action, std::decay_t<ContainerType>>::apply_action(_a, _c); }) {
+        action_type<Action, std::decay_t<ContainerType>>::apply_action(_a, _c);
+    } else {
+        std::cout << "void action" << std::endl;
+    }
 }
-
-/* Wrapper for method name to be in container wrapper, CRTP use */
-template<
-    typename Action,
-    // parent type, where container is
-    typename ContainerWrapperType
->
-struct name_method_wrapper {};
 
 /*
  * OPTINAL FOR ACTION
@@ -231,9 +223,29 @@ decltype(auto) method_wrapper(NameMethodWrapperImplType* nmw, Args&&... args) {
     );
 }
 
+/* Method to call action from action wrapper, use cast to parent */
+template<
+    template<typename... _> typename Action, 
+    // parent type
+    typename ContainerWrapperType,
+    // pointer this type, need to static cast
+    typename NameMethodWrapperImplType,
+    typename... Args
+>
+decltype(auto) method_wrapper(NameMethodWrapperImplType* nmw, Args&&... args) {
+    using Container = ContainerWrapperType::Container;
+    using ActionType = action_type<Action, Container>::Action;
+    return method_wrapper_impl<ActionType>(
+        get_container<ContainerWrapperType>(nmw),
+        get_history<ContainerWrapperType>(nmw),
+        args...
+    );
+}
+
 /* Help for get action wrapper */
 template<typename ContainerWrapperType, typename NameMethodWrapperImplType>
 decltype(auto) get_container_wrapper(NameMethodWrapperImplType* ptr) {
     return *static_cast<ContainerWrapperType*>(ptr);
 }
 
+}; // namespace actions
